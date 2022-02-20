@@ -4,7 +4,10 @@
 import os
 import versioneer
 from setuptools import setup
-from pip.req import parse_requirements
+import pathlib
+
+import pkg_resources
+import setuptools
 
 PACKAGE = 'src'
 
@@ -21,10 +24,12 @@ def get_requirements():
         os.path.dirname(__file__),
         'requires.dev.txt')
     if os.path.exists(requirements_file_path):
-        parsed_requirements = parse_requirements(
-            requirements_file_path,
-            session=False)
-        requirements = [str(ir.req) for ir in parsed_requirements]
+        with pathlib.Path(requirements_file_path).open() as requirements_txt:
+            requirements = [
+                str(requirement)
+                for requirement
+                in pkg_resources.parse_requirements(requirements_txt)
+            ]
     else:
         requirements = []
     return requirements
